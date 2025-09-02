@@ -65,7 +65,7 @@ Install requirements:
 pip install -r requirements.txt
 
 
-Create .env file:
+'''Create .env file:
 
 FLASK_SECRET=change-me-please
 DATABASE_URL=mysql+pymysql://mindfit_user:supersecret@localhost:3306/mindfit
@@ -76,7 +76,7 @@ INTASEND_SECRET_KEY=sk_test_xxxxx
 INTASEND_TEST=true
 PREMIUM_PRICE=5.00
 PREMIUM_CURRENCY=KES
-
+'''
 
 Run the app:
 
