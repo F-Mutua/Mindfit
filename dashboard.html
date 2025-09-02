@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MindFit Learn</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 28px;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info span {
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3ab4d8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .welcome-banner h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h3 i {
+            color: var(--primary);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            background: var(--light);
+        }
+        
+        .stat-box i {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-box.focus i { color: var(--primary); }
+        .stat-box.mood i { color: var(--success); }
+        .stat-box.stress i { color: var(--warning); }
+        .stat-box.streak i { color: var(--danger); }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .session-form {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.3);
+        }
+        
+        .mood-selectors {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        
+        .mood-option {
+            text-align: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .mood-option:hover {
+            background: var(--light);
+        }
+        
+        .mood-option.selected {
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .mood-option i {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+        
+        .mood-option.happy i { color: #4ade80; }
+        .mood-option.neutral i { color: #fbbf24; }
+        .mood-option.sad i { color: #f87171; }
+        .mood-option.stressed i { color: #a855f7; }
+        
+        .ai-analysis {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+        }
+        
+        .analysis-result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            background: var(--light);
+        }
+        
+        .premium-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .premium-section h3 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        
+        .premium-features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .premium-feature {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .premium-feature i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .study-tips {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .tip-card {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .recent-sessions {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+        }
+        
+        .session-list {
+            margin-top: 20px;
+        }
+        
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .session-item:last-child {
+            border-bottom: none;
+        }
+        
+        .session-subject {
+            font-weight: 600;
+        }
+        
+        .session-duration {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--gray);
+            border-top: 1px solid #ddd;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard, .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .premium-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                justify-content: center;
+            }
+            
+            .mood-selectors {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .mood-option {
+                flex: 0 0 45%;
+                margin-bottom: 10px;
+            }
+        }
+        
+        .stat-card {
+            border-left: 4px solid #0d6efd;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+        .mood-very-stressed { background-color: #dc3545; color: white; }
+        .mood-stressed { background-color: #fd7e14; color: white; }
+        .mood-neutral { background-color: #ffc107; color: #212529; }
+        .mood-relaxed { background-color: #198754; color: white; }
+        .mood-very-relaxed { background-color: #0d6efd; color: white; }
+        .session-card {
+            border-left: 4px solid #0d6efd;
+            transition: all 0.2s;
+        }
+        .session-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+        }
+        .goal-progress {
+            height: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <h1>MindFit Learn</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active">Dashboard</a></li>
+                        <li><a href="#">Progress</a></li>
+                        <li><a href="#">Wellness</a></li>
+                        <li><a href="#">Tips</a></li>
+                    </ul>
+                </nav>
+                <div class="user-info">
+                    <span>Welcome, <span id="user-name">User</span>!</span>
+                    <button class="btn btn-outline" id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="welcome-banner">
+            <h2>Welcome to Your Learning Dashboard!</h2>
+            <p>Track your study progress, monitor your wellness, and achieve your academic goals.</p>
+        </section>
+
+        <section class="dashboard">
+            <div class="card">
+                <h3><i class="fas fa-chart-line"></i> Study Overview</h3>
+                <div class="stats">
+                    <div class="stat-box focus">
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-value" id="total-hours">0h</div>
+                        <div class="stat-label">Focus Time</div>
+                    </div>
+                    <div class="stat-box mood">
+                        <i class="fas fa-smile"></i>
+                        <div class="stat-value" id="avg-mood">0%</div>
+                        <div class="stat-label">Avg. Mood</div>
+                    </div>
+                    <div class="stat-box stress">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <div class="stat-value" id="stress-level">0%</div>
+                        <div class="stat-label">Stress Level</div>
+                    </div>
+                    <div class="stat-box streak">
+                        <i class="fas fa-fire"></i>
+                        <div class="stat-value" id="current-streak">0d</div>
+                        <div class="stat-label">Current Streak</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-tasks"></i> Today's Goals</h3>
+                <div class="progress-container">
+                    <div class="goal">
+                        <span>2h of Focused Study</span>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 30%" id="study-progress"></div>
+                        </div>
+                    </div>
+                    <div class="goal">
+                        <span>15min Mindfulness</span>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 70%" id="mindfulness-progress"></div>
+                        </div>
+                    </div>
+                    <div class="goal">
+                        <span>Log 1 Session</span>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 100%" id="session-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="session-form">
+            <h3><i class="fas fa-plus-circle"></i> Log Study Session</h3>
+            <form id="session-form">
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <select class="form-control" id="subject" required>
+                        <option value="">Select a subject</option>
+                        <option value="math">Mathematics</option>
+                        <option value="science">Science</option>
+                        <option value="history">History</option>
+                        <option value="language">Language Arts</option>
+                        <option value="programming">Programming</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="duration">Duration (minutes)</label>
+                    <input type="number" class="form-control" id="duration" min="5" max="240" placeholder="e.g., 45" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Pre-study Mood</label>
+                    <div class="mood-selectors">
+                        <div class="mood-option happy" data-mood="happy">
+                            <i class="fas fa-smile"></i>
+                            <div>Happy</div>
+                        </div>
+                        <div class="mood-option neutral" data-mood="neutral">
+                            <i class="fas fa-meh"></i>
+                            <div>Neutral</div>
+                        </div>
+                        <div class="mood-option sad" data-mood="sad">
+                            <i class="fas fa-frown"></i>
+                            <div>Sad</div>
+                        </div>
+                        <div class="mood-option stressed" data-mood="stressed">
+                            <i class="fas fa-tired"></i>
+                            <div>Stressed</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Notes (what you studied, how it felt)</label>
+                    <textarea class="form-control" id="notes" rows="3" placeholder="Describe your study session..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save Session</button>
+            </form>
+        </section>
+
+        <section class="recent-sessions">
+            <h3><i class="fas fa-history"></i> Recent Study Sessions</h3>
+            <div class="session-list" id="recent-sessions">
+                <div class="session-item">
+                    <div class="session-subject">No sessions yet</div>
+                    <div class="session-duration">Log your first session!</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="ai-analysis">
+            <h3><i class="fas fa-robot"></i> AI Wellness Analysis</h3>
+            <p>Our AI analyzes your notes to detect stress patterns and provide personalized recommendations.</p>
+            
+            <div class="analysis-result">
+                <h4>Your Wellness Insights</h4>
+                <p><strong>Detected Mood Pattern:</strong> Balanced</p>
+                <p><strong>Stress Level:</strong> 35%</p>
+                <p><strong>Recommendation:</strong> You're maintaining a good balance. Try the Pomodoro technique if you need to improve focus.</p>
+            </div>
+        </section>
+
+        <section class="charts-container">
+            <div class="chart-container">
+                <h3>Weekly Focus Time</h3>
+                <canvas id="focusChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Mood Trends</h3>
+                <canvas id="moodChart"></canvas>
+            </div>
+        </section>
+
+        <section class="study-tips">
+            <h3><i class="fas fa-lightbulb"></i> Study & Wellness Tips</h3>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <h4>Pomodoro Technique</h4>
+                    <p>Study for 25 minutes, then take a 5-minute break. After four sessions, take a longer break.</p>
+                </div>
+                <div class="tip-card">
+                    <h4>Mindful Breathing</h4>
+                    <p>When stressed, try the 4-7-8 technique: inhale for 4s, hold for 7s, exhale for 8s.</p>
+                </div>
+                <div class="tip-card">
+                    <h4>Active Recall</h4>
+                    <p>Test yourself on the material rather than passively rereading it for better retention.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="premium-section">
+            <h3>Upgrade to Premium</h3>
+            <p>Unlock personalized insights, advanced analytics, and premium wellness content</p>
+            
+            <div class="premium-features">
+                <div class="premium-feature">
+                    <i class="fas fa-chart-pie"></i>
+                    <h4>Detailed Reports</h4>
+                    <p>In-depth analysis of your study patterns and wellness trends</p>
+                </div>
+                <div class="premium-feature">
+                    <i class="fas fa-robot"></i>
+                    <h4>AI Recommendations</h4>
+                    <p>Personalized study and wellness tips based on your data</p>
+                </div>
+                <div class="premium-feature">
+                    <i class="fas fa-gamepad"></i>
+                    <h4>Gamified Streaks</h4>
+                    <p>Earn rewards for consistent study and self-care habits</p>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary">Get Premium - $4.99/month</button>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>MindFit Learn - Balancing Education and Wellness for Students</p>
+            <p> 2023 MindFit Learn. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sample data for charts
+        const focusData = {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Study Hours',
+                data: [1.5, 2, 1, 1.5, 2.5, 0.5, 0],
+                backgroundColor: 'rgba(67, 97, 238, 0.2)',
+                borderColor: 'rgba(67, 97, 238, 1)',
+                borderWidth: 2,
+                tension: 0.3
+            }]
+        };
+
+        const moodData = {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Mood Score (1-10)',
+                data: [7, 6, 5, 8, 4, 9, 8],
+                backgroundColor: 'rgba(76, 201, 240, 0.2)',
+                borderColor: 'rgba(76, 201, 240, 1)',
+                borderWidth: 2,
+                tension: 0.3
+            }]
+        };
+
+        // Initialize charts and data
+        window.onload = function() {
+            // Get user data from localStorage (set during login)
+            const userData = JSON.parse(localStorage.getItem('userData')) || {name: 'Student'};
+            document.getElementById('user-name').textContent = userData.name;
+            
+            // Initialize charts
+            const focusCtx = document.getElementById('focusChart').getContext('2d');
+            const moodCtx = document.getElementById('moodChart').getContext('2d');
+            
+            new Chart(focusCtx, {
+                type: 'line',
+                data: focusData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Hours'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            new Chart(moodCtx, {
+                type: 'line',
+                data: moodData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            title: {
+                                display: true,
+                                text: 'Mood Score'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Mood selection
+            const moodOptions = document.querySelectorAll('.mood-option');
+            moodOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    moodOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            // Form submission
+            document.getElementById('session-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const subject = document.getElementById('subject').value;
+                const duration = document.getElementById('duration').value;
+                const notes = document.getElementById('notes').value;
+                const selectedMood = document.querySelector('.mood-option.selected');
+                const mood = selectedMood ? selectedMood.getAttribute('data-mood') : null;
+                
+                if (!mood) {
+                    alert('Please select your pre-study mood');
+                    return;
+                }
+                
+                // Save session to localStorage (in a real app, this would go to the server)
+                const session = {
+                    subject,
+                    duration,
+                    mood,
+                    notes,
+                    date: new Date().toLocaleDateString()
+                };
+                
+                // Get existing sessions or create new array
+                const sessions = JSON.parse(localStorage.getItem('studySessions')) || [];
+                sessions.unshift(session); // Add new session to beginning
+                localStorage.setItem('studySessions', JSON.stringify(sessions));
+                
+                // Update UI
+                updateRecentSessions();
+                updateStats();
+                
+                // Reset form
+                this.reset();
+                moodOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                alert('Study session saved successfully!');
+            });
+            
+            // Logout button
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            });
+            
+            // Load initial data
+            updateRecentSessions();
+            updateStats();
+        };
+        
+        function updateRecentSessions() {
+            const sessions = JSON.parse(localStorage.getItem('studySessions')) || [];
+            const sessionsContainer = document.getElementById('recent-sessions');
+            
+            if (sessions.length === 0) {
+                sessionsContainer.innerHTML = `
+                    <div class="session-item">
+                        <div class="session-subject">No sessions yet</div>
+                        <div class="session-duration">Log your first session!</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            sessionsContainer.innerHTML = '';
+            const recentSessions = sessions.slice(0, 5); // Show only 5 most recent
+            
+            recentSessions.forEach(session => {
+                const sessionElement = document.createElement('div');
+                sessionElement.className = 'session-item';
+                sessionElement.innerHTML = `
+                    <div class="session-subject">${session.subject}</div>
+                    <div class="session-duration">${session.duration} min</div>
+                `;
+                sessionsContainer.appendChild(sessionElement);
+            });
+        }
+        
+        function updateStats() {
+            const sessions = JSON.parse(localStorage.getItem('studySessions')) || [];
+            
+            // Calculate total study time
+            const totalMinutes = sessions.reduce((total, session) => total + parseInt(session.duration), 0);
+            const totalHours = (totalMinutes / 60).toFixed(1);
+            document.getElementById('total-hours').textContent = `${totalHours}h`;
+            
+            // Update streak (simplified)
+            document.getElementById('current-streak').textContent = sessions.length > 0 ? '1d' : '0d';
+            
+            // Update progress bars based on goals
+            const studyProgress = Math.min((totalMinutes / 120) * 100, 100);
+            document.getElementById('study-progress').style.width = `${studyProgress}%`;
+            
+            // These are just placeholder values for demonstration
+            document.getElementById('mindfulness-progress').style.width = '70%';
+            document.getElementById('session-progress').style.width = sessions.length > 0 ? '100%' : '0%';
+        }
+    </script>
+</body>
+</html>

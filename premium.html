@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Upgrade to Premium 💎</h2>
+  {% if is_premium %}
+    <p>You already have Premium access 🎉</p>
+  {% else %}
+    <p>Unlock advanced mood analytics and personalized insights for only {{ price }} {{ currency }}.</p>
+    <form method="post" action="{{ url_for('checkout') }}">
+      <button type="submit">Upgrade Now</button>
+    </form>
+  {% endif %}
+{% endblock %}
